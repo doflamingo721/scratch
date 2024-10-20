@@ -1,0 +1,85 @@
+additionalTrustBundlePolicy: Always
+apiVersion: v1
+baseDomain: huco.labs
+compute:
+  - architecture: amd64
+    hyperthreading: Enabled
+    name: worker
+    platform: {}
+    replicas: 0
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  platform: {}
+  replicas: 3
+metadata:
+  name: ni-ha
+networking:
+  clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+  machineNetwork:
+    - cidr: 10.0.0.0/16
+  networkType: OVNKubernetes
+  serviceNetwork:
+    - 172.30.0.0/16
+platform:
+  vsphere:
+    apiVIPs:
+      - 172.27.10.89
+    failureDomains:
+      - name: generated-failure-domain
+        region: generated-region
+        server: vc.huco.labs
+        topology:
+          computeCluster: /dso/host/master-cluster
+          datacenter: dso
+          datastore: /dso/datastore/vsanDatastore
+          networks:
+            - default-vlan-public
+          resourcePool: /dso/host/master-cluster/Resources
+        zone: generated-zone
+    ingressVIPs:
+      - 172.27.10.95
+    vcenters:
+      - datacenters:
+          - dso
+        password: 2sYFu6wPfAbM
+        port: 443
+        server: vc.huco.labs
+        user: vaishnav@huco.labs
+fips: false
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZTczNmExMGY0MWE2NDkzMmI0YTEyMTI4Y2ExYjA0Zjg6VVVVVjk0UUtKSEtHNVNLTUM5MEE1WkFWTEpNOUo3NVRLUE5SU0RVTk0yREhYNjhKS044RFhWOUpVSlY3M0NGMA=="},"quay-registry.huco.labs:8443":{"auth":"aW5pdDoxcHFLTm9Ud2EzSXVTdnpyMFI1MjRYOTc4RTZQZ0hsTw=="},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZTczNmExMGY0MWE2NDkzMmI0YTEyMTI4Y2ExYjA0Zjg6VVVVVjk0UUtKSEtHNVNLTUM5MEE1WkFWTEpNOUo3NVRLUE5SU0RVTk0yREhYNjhKS044RFhWOUpVSlY3M0NGMA=="},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLTk4MTE1MTM3LWY4NDEtNDU5NC1iN2ZlLWNlOTdiNGExZWU1ZTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTRaalEyWlRCaFlqTXdObVEwT1RCa1lqQTBaR0UyTkRjM1lUQmpZell5TmlKOS5vRzdpVlE2YXNacW9pbGJoTkRpNFhGYnhRSTFzWkdJTzJjaFpTQ25zRlFFeEp5d19nOTE2SzRFWEozNVZDc05kRHctRVNNQXZsWVkyOEZDaHdnaTY3YV9QbGF5dnFPOE9qd0djbmRCQUZ5TGg1NTZHRldjeDR4bEUwTVUzdERRZGR4dGRlSVk1a1NlMkUtUXItT0FucFBVdFpfbnhWeHRGWm8zR1RfSDRmbFFkanpzcE8xNTlWUzBGSnJsWDdRYUFJVXQyb2JYOTYzWGVKbjlUR2NSVFVQNDlXdEU3RnUyb0lIdGlrVXloVWU1NGR0SFJ6XzUwZDNTdzlEVUMzZ2J5YURWRHlCLWRvbEZOMTQtQVdhTndxNThRcWc0cFYwbVltcU9LQm1CMFE1MGNJQTFtbWZPT2FjdnlmM0xOTldzT2ZxRXRFdlVFY0t0U29WcWJ4aWhkSzFIaGQ0SkdCVVVBeERTWUpCTF9zdnFleFFPSE5OaFlOb1Z1eTJEMXZhb1FVYi1XWDE4RGM5ZldyQTFZclpOd0ItNzVpVEhzcTIyWlZ6TUdLaDBNWWRIQUYzVXpEeGt1ZXpYNnFSWGZPYlBrTG1lS0J2ME5NbDlzM2JtY0FoWk0tMERJNVFZYVNDQjA1X0FOMjBvblh3MFdfZ1M1MVI2T2tDNnFMSHFtN0VQM3FRYk9Eem9ZVlU5WC03NkQ2aFJEWkt2SE41WHVzVmJONngzbzE5QWpyNmpOd3pZZC1TTUJ5VnhyeG5vaWlabHM1TFdlcjdFZDNqSnVWZk82TXpwQXpTYkIzeVUxWnN1ZGdsQlVUS0YtQkxKRHh3UXc0VkFGX2I4R2R5eGhRR2VvUlhSMUo2ZzBXdTNqQkV2YUVWU1RhSHNsV2w3UUN6N3lMWEtMYVg4cHEyUQ=="},"registry.redhat.io":{"auth":"fHVoYy1wb29sLTk4MTE1MTM3LWY4NDEtNDU5NC1iN2ZlLWNlOTdiNGExZWU1ZTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTRaalEyWlRCaFlqTXdObVEwT1RCa1lqQTBaR0UyTkRjM1lUQmpZell5TmlKOS5vRzdpVlE2YXNacW9pbGJoTkRpNFhGYnhRSTFzWkdJTzJjaFpTQ25zRlFFeEp5d19nOTE2SzRFWEozNVZDc05kRHctRVNNQXZsWVkyOEZDaHdnaTY3YV9QbGF5dnFPOE9qd0djbmRCQUZ5TGg1NTZHRldjeDR4bEUwTVUzdERRZGR4dGRlSVk1a1NlMkUtUXItT0FucFBVdFpfbnhWeHRGWm8zR1RfSDRmbFFkanpzcE8xNTlWUzBGSnJsWDdRYUFJVXQyb2JYOTYzWGVKbjlUR2NSVFVQNDlXdEU3RnUyb0lIdGlrVXloVWU1NGR0SFJ6XzUwZDNTdzlEVUMzZ2J5YURWRHlCLWRvbEZOMTQtQVdhTndxNThRcWc0cFYwbVltcU9LQm1CMFE1MGNJQTFtbWZPT2FjdnlmM0xOTldzT2ZxRXRFdlVFY0t0U29WcWJ4aWhkSzFIaGQ0SkdCVVVBeERTWUpCTF9zdnFleFFPSE5OaFlOb1Z1eTJEMXZhb1FVYi1XWDE4RGM5ZldyQTFZclpOd0ItNzVpVEhzcTIyWlZ6TUdLaDBNWWRIQUYzVXpEeGt1ZXpYNnFSWGZPYlBrTG1lS0J2ME5NbDlzM2JtY0FoWk0tMERJNVFZYVNDQjA1X0FOMjBvblh3MFdfZ1M1MVI2T2tDNnFMSHFtN0VQM3FRYk9Eem9ZVlU5WC03NkQ2aFJEWkt2SE41WHVzVmJONngzbzE5QWpyNmpOd3pZZC1TTUJ5VnhyeG5vaWlabHM1TFdlcjdFZDNqSnVWZk82TXpwQXpTYkIzeVUxWnN1ZGdsQlVUS0YtQkxKRHh3UXc0VkFGX2I4R2R5eGhRR2VvUlhSMUo2ZzBXdTNqQkV2YUVWU1RhSHNsV2w3UUN6N3lMWEtMYVg4cHEyUQ=="}}}'
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCb+EGF0IMobe9NqC+rxIV8Kruuq1z0YCucN07OL7l8MGusYj+R0Xh4NsA8rjCdFXPdVZNfooFnftWlQ/gOr1HNu2CbfjcHcHFuxqj8ecJNIiMpchMaBed8w4SHyHngFeQ6LJ+CS5IcwjQc3n8YEAvNG+bP+MDDFkOSM6a96Sp2xv1eUSCUnVkOCAgg6DGqcPj5V0GhPdqxblpPJuMml6G8dOTMV16D6InODBmrNtfqi7mU1vKusySQ/DLGLaQcgvlQa7NclOGYzLmx5uvA4zJl8uCJjsJ5Ka6GUEByBAC5vTlXfFSv8lfMDG2qdk2Gg8SNT25jKROVJho6G39ouYie7rtvoS7NYEUjLcdsA9bCmVOAFJNhP96XSWkPpFv1va5QmnnrrznpKfYzy1e5TCWbohtuuah7SCFpK/YX+SSFzIcQnDY0shnG7m7u2qGuuRHdIILWUUmleQml3BNmJykj/jCY2LtC4rg5QZdRKXYHgDx7PDllVtET+46G4+kVwTGN27D0IflBury4/FBU/5g6eOhw0hhdvh4sUYiyxLmWalgS8wHTgQf26RMm8Yg1JMZnyTxCbgXUoZliQ2tPmSLL05IAifSeErOS4r/tJmE43oNMFqHn6v+BENp/3DEVQ0SYJrwMZCMYrZnaMr83rqvw3RcKKF4NojD6lmeoFwKTbQ== vaishnav@huco.labs'
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIID6zCCAtOgAwIBAgIUdWrmmUP5x88TSduJRfICMeriosUwDQYJKoZIhvcNAQEL
+  BQAwcTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+  azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xIDAeBgNVBAMMF3F1
+  YXktcmVnaXN0cnkuaHVjby5sYWJzMB4XDTI0MTAxNzEzMzgyM1oXDTI3MDgwNzEz
+  MzgyM1owcTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcg
+  WW9yazENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xIDAeBgNVBAMM
+  F3F1YXktcmVnaXN0cnkuaHVjby5sYWJzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+  MIIBCgKCAQEAr7U/g8ENhxErW9+UpR2gIsgSx00CilvgsZ12ILnm9CnUDjsLGSqU
+  5Jr7DMi7Uy7Rg2uSG3Bou9IWAIo5AKD1g7o9PWu4JoB6uLAzfzKBOUI2zEohlysw
+  umC2CIgKmYgV1zUnYVFoo3PIEMxQ1MrXGLzQaidRKXJUrkgniKb1sf1DtHTlGR15
+  Z2OeZWdio8NPQx5FXEciai/YG8vba0kDK/tyFjbdrG+8lPJzQY/eoCSiabuz++MP
+  N304kITKgIpKoqoKfLFgDrIaVOw69sOeTWZuWnb4An3TviNYl5x0clKR/kjqDDFm
+  Vf6LRSU4nuiYiVp04ugDhfDR++RuaZv0PQIDAQABo3sweTALBgNVHQ8EBAMCAuQw
+  EwYDVR0lBAwwCgYIKwYBBQUHAwEwIgYDVR0RBBswGYIXcXVheS1yZWdpc3RyeS5o
+  dWNvLmxhYnMwEgYDVR0TAQH/BAgwBgEB/wIBATAdBgNVHQ4EFgQUuhiXVZR9Rxxz
+  adOx1AleqQDbbPMwDQYJKoZIhvcNAQELBQADggEBAAkMwXCPAjc01/UkOcLE8wjR
+  njBPrFVWNAHQI3PjjidCGUqWP7+MNxMNCIO90Tkpe2b0xPkgsipgjzchHiF8XSAi
+  p38FT6JVzu/bKPjkaOPaXa32oFjnIHhbcqSE2iQ/c23OBD8LQ0jwBh9riUzHpEZy
+  Wp4JJBZeVO5p4dbyzgQdSBfNTF8kqkEBQ0K2a8L/wI1j2NammfQUrr5wQI033xhO
+  LTj4sUIr5tytRlZD1Tv4GdCA2V41Y3Q0ZdyaLSTo6k7tGP42qCHccBm+RSkRC5GG
+  mZVsnR83BNuYIibk1RbjsqRLUKrZwVAdUZ0S5KcF5g1p//uLaRuY+zGIlkJjs+o=
+  -----END CERTIFICATE-----
+imageContentSources:
+  - mirrors:
+      - quay-registry.huco.labs:8443/openshift/release-images
+    source: quay.io/openshift-release-dev/ocp-release
+  - mirrors:
+      - quay-registry.huco.labs:8443/openshift/release
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev

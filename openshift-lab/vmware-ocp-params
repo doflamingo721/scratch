@@ -1,0 +1,5 @@
+guestinfo.ignition.config.data.encoding     -    base64
+guestinfo.ignition.config.data              -    encrypted base64 bootstrap/master/worker data
+guestinfo.afterburn.initrd.network-kargs    -    ip=172.27.10.96::0.0.0.0:255.255.255.0:bootstrap::none nameserver=172.27.10.12
+disk.EnableUUID                             -    TRUE
+stealclock.enable                           -    TRUE
