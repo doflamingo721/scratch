@@ -1,0 +1,67 @@
+additionalTrustBundlePolicy: Always
+apiVersion: v1
+baseDomain: vaishnav.labs
+compute:
+  - architecture: amd64
+    hyperthreading: Enabled
+    name: worker
+    platform: {}
+    replicas: 0
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  platform: {}
+  replicas: 3
+metadata:
+  name: ni-ha
+networking:
+  clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+  machineNetwork:
+    - cidr: 10.0.0.0/16
+  networkType: OVNKubernetes
+  serviceNetwork:
+    - 172.30.0.0/16
+platform:
+  vsphere:
+    apiVIPs:
+      - 172.27.10.89
+    failureDomains:
+      - name: generated-failure-domain
+        region: generated-region
+        server: vc.vaishnav.labs
+        topology:
+          computeCluster: /dso/host/master-cluster
+          datacenter: dso
+          datastore: /dso/datastore/vsanDatastore
+          networks:
+            - default-vlan-public
+          resourcePool: /dso/host/master-cluster/Resources
+        zone: generated-zone
+    ingressVIPs:
+      - 172.27.10.95
+    vcenters:
+      - datacenters:
+          - dso
+        password: <password>
+        port: 443
+        server: vc.vaishnav.labs
+        user: <username>
+fips: false
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZTczNmExMGY0MWE2NDkzMmI0YTEyMTI4Y2ExYjA0Zjg6VVVVVjk0UUtKSEtHNVNLTUM5MEE1WkFWTEpNOUo3NVRLUE5SU0RVTk0yREhYNjhKS044RFhWOUpVSlY3M0NGMA=="},"quay-registry.vaishnav.labs:8443":{"auth":"aW5pdDoxcHFLTm9Ud2EzSXVTdnpyMFI1MjRYOTc4RTZQZ0hsTw=="},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZTczNmExMGY0MWE2NDkzMmI0YTEyMTI4Y2ExYjA0Zjg6VVVVVjk0UUtKSEtHNVNLTUM5MEE1WkFWTEpNOUo3NVRLUE5SU0RVTk0yREhYNjhKS044RFhWOUpVSlY3M0NGMA=="},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLTk4MTE1MTM3LWY4NDEtNDU5NC1iN2ZlLWNlOTdiNGExZWU1ZTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTRaalEyWlRCaFlqTXdObVEwT1RCa1lqQTBaR0UyTkRjM1lUQmpZell5TmlKOS5vRzdpVlE2YXNacW9pbGJoTkRpNFhGYnhRSTFzWkdJTzJjaFpTQ25zRlFFeEp5d19nOTE2SzRFWEozNVZDc05kRHctRVNNQXZsWVkyOEZDaHdnaTY3YV9QbGF5dnFPOE9qd0djbmRCQUZ5TGg1NTZHRldjeDR4bEUwTVUzdERRZGR4dGRlSVk1a1NlMkUtUXItT0FucFBVdFpfbnhWeHRGWm8zR1RfSDRmbFFkanpzcE8xNTlWUzBGSnJsWDdRYUFJVXQyb2JYOTYzWGVKbjlUR2NSVFVQNDlXdEU3RnUyb0lIdGlrVXloVWU1NGR0SFJ6XzUwZDNTdzlEVUMzZ2J5YURWRHlCLWRvbEZOMTQtQVdhTndxNThRcWc0cFYwbVltcU9LQm1CMFE1MGNJQTFtbWZPT2FjdnlmM0xOTldzT2ZxRXRFdlVFY0t0U29WcWJ4aWhkSzFIaGQ0SkdCVVVBeERTWUpCTF9zdnFleFFPSE5OaFlOb1Z1eTJEMXZhb1FVYi1XWDE4RGM5ZldyQTFZclpOd0ItNzVpVEhzcTIyWlZ6TUdLaDBNWWRIQUYzVXpEeGt1ZXpYNnFSWGZPYlBrTG1lS0J2ME5NbDlzM2JtY0FoWk0tMERJNVFZYVNDQjA1X0FOMjBvblh3MFdfZ1M1MVI2T2tDNnFMSHFtN0VQM3FRYk9Eem9ZVlU5WC03NkQ2aFJEWkt2SE41WHVzVmJONngzbzE5QWpyNmpOd3pZZC1TTUJ5VnhyeG5vaWlabHM1TFdlcjdFZDNqSnVWZk82TXpwQXpTYkIzeVUxWnN1ZGdsQlVUS0YtQkxKRHh3UXc0VkFGX2I4R2R5eGhRR2VvUlhSMUo2ZzBXdTNqQkV2YUVWU1RhSHNsV2w3UUN6N3lMWEtMYVg4cHEyUQ=="},"registry.redhat.io":{"auth":"fHVoYy1wb29sLTk4MTE1MTM3LWY4NDEtNDU5NC1iN2ZlLWNlOTdiNGExZWU1ZTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTRaalEyWlRCaFlqTXdObVEwT1RCa1lqQTBaR0UyTkRjM1lUQmpZell5TmlKOS5vRzdpVlE2YXNacW9pbGJoTkRpNFhGYnhRSTFzWkdJTzJjaFpTQ25zRlFFeEp5d19nOTE2SzRFWEozNVZDc05kRHctRVNNQXZsWVkyOEZDaHdnaTY3YV9QbGF5dnFPOE9qd0djbmRCQUZ5TGg1NTZHRldjeDR4bEUwTVUzdERRZGR4dGRlSVk1a1NlMkUtUXItT0FucFBVdFpfbnhWeHRGWm8zR1RfSDRmbFFkanpzcE8xNTlWUzBGSnJsWDdRYUFJVXQyb2JYOTYzWGVKbjlUR2NSVFVQNDlXdEU3RnUyb0lIdGlrVXloVWU1NGR0SFJ6XzUwZDNTdzlEVUMzZ2J5YURWRHlCLWRvbEZOMTQtQVdhTndxNThRcWc0cFYwbVltcU9LQm1CMFE1MGNJQTFtbWZPT2FjdnlmM0xOTldzT2ZxRXRFdlVFY0t0U29WcWJ4aWhkSzFIaGQ0SkdCVVVBeERTWUpCTF9zdnFleFFPSE5OaFlOb1Z1eTJEMXZhb1FVYi1XWDE4RGM5ZldyQTFZclpOd0ItNzVpVEhzcTIyWlZ6TUdLaDBNWWRIQUYzVXpEeGt1ZXpYNnFSWGZPYlBrTG1lS0J2ME5NbDlzM2JtY0FoWk0tMERJNVFZYVNDQjA1X0FOMjBvblh3MFdfZ1M1MVI2T2tDNnFMSHFtN0VQM3FRYk9Eem9ZVlU5WC03NkQ2aFJEWkt2SE41WHVzVmJONngzbzE5QWpyNmpOd3pZZC1TTUJ5VnhyeG5vaWlabHM1TFdlcjdFZDNqSnVWZk82TXpwQXpTYkIzeVUxWnN1ZGdsQlVUS0YtQkxKRHh3UXc0VkFGX2I4R2R5eGhRR2VvUlhSMUo2ZzBXdTNqQkV2YUVWU1RhSHNsV2w3UUN6N3lMWEtMYVg4cHEyUQ=="}}}'
+sshKey: ''
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  `
+  `
+  `
+  -----END CERTIFICATE-----
+imageContentSources:
+  - mirrors:
+      - quay-registry.vaishnav.labs:8443/openshift/release-images
+    source: quay.io/openshift-release-dev/ocp-release
+  - mirrors:
+      - quay-registry.vaishnav.labs:8443/openshift/release
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
