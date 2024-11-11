@@ -1,0 +1,2 @@
+To approve all pending CSRs:
+oc get csr --no-headers | awk '/Pending/ {print $1}' | xargs oc adm certificate approve
