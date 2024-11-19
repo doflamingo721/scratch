@@ -1,0 +1,42 @@
+apiVersion: appprotect.f5.com/v1beta1
+kind: APPolicy
+metadata:
+  name: api-policy
+spec:
+  policy:
+    signature-requirements:
+    - tag: API-Security
+    signature-sets:
+    - name: api_signature_set
+      block: true
+      signatureSet:
+        filter:
+          tagValue: API-Security
+          tagFilter: eq
+    - tag: SQL-Injection
+      signature-sets:
+      - name: sql_injection_signatures
+        block: true
+        signatureSet:
+          filter:
+            tagValue: SQL-Injection
+            tagFilter: eq
+    applicationLanguage: utf-8
+    blocking-settings:
+      violations:
+      - alarm: true
+        block: true
+        name: VIOL_PARAMETER_VALUE_METACHAR  # Protect against SQL injection
+      - alarm: true
+        block: true
+        name: VIOL_JSON_MALFORMED  # Protect against malformed JSON
+      - alarm: true
+        block: true
+        name: VIOL_XML_MALFORMED  # Protect against malformed XML
+      - alarm: true
+        block: true
+        name: VIOL_PARAMETER  # General parameter validation violation
+    enforcementMode: blocking
+    name: api-policy
+    template:
+      name: POLICY_TEMPLATE_NGINX_BASE
