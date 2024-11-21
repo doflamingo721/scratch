@@ -45,3 +45,79 @@ spec:
             - ALL
             add:
             - NET_BIND_SERVICE
+---
+
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: nginx-ingress-scc
+allowHostPorts: true
+allowPrivilegeEscalation: false
+runAsUser:
+  type: MustRunAsRange
+  uidRangeMin: 1000950000
+  uidRangeMax: 1000959999
+seLinuxContext:
+  type: MustRunAs
+supplementalGroups:
+  type: RunAsAny
+fsGroup:
+  type: RunAsAny
+volumes:
+- configMap
+- secret
+- emptyDir
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-ingress-scc-rolebinding
+subjects:
+- kind: ServiceAccount
+  name: ngnixf5loadbalancer-nginx-ingress-controller
+  namespace: <your-namespace>
+roleRef:
+  kind: ClusterRole
+  name: system:openshift:scc:nginx-ingress-scc
+  apiGroup: rbac.authorization.k8s.io
+
+#Cluster role and cluster role binding for big ip cis sa:
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: bigip-ctlr-clusterrole
+rules:
+- apiGroups: [""]
+  resources: ["nodes", "services", "endpoints", "namespaces", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses", "ingressclasses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["route.openshift.io"]
+  resources: ["routes"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["cis.f5.com"]
+  resources: ["virtualservers", "tlsprofiles", "ingresslinks", "externaldnses"]
+  verbs: ["get", "list", "watch", "update", "create", "delete"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bigip-ctlr
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: bigip-ctlr-clusterrole-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: bigip-ctlr-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: bigip-ctlr
+  namespace: kube-system
