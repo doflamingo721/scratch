@@ -1,0 +1,127 @@
+{{- if not .Values.args.cm_url }}
+{{/*
+Generate errors for missing required values.
+*/}}
+# {{required "Central Manager url not specified - add to Values or pass with `--set` " .Values.args.cm_url }}
+{{- else -}}
+apiVersion: {{ template "deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "f5-bigip-ctlr.fullname" . }}
+  namespace: {{ template "f5-bigip-ctlr.namespace" . }}
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ template "f5-bigip-ctlr.name" . }}
+    app: {{ template "f5-bigip-ctlr.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "-" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "f5-bigip-ctlr.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/name: {{ template "f5-bigip-ctlr.name" . }}
+        app: {{ template "f5-bigip-ctlr.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- end }}
+      serviceAccountName: {{ template "f5-bigip-ctlr.serviceAccountName" . }}
+{{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      {{- range $pullSecret := .Values.image.pullSecrets }}
+        - name: {{ $pullSecret }}
+      {{- end }}
+{{- end }}
+      securityContext:
+        {{- $securityContext := .Values.securityContext | default dict }}
+        {{- if $securityContext.runAsUser }}
+        runAsUser: {{ $securityContext.runAsUser }}
+        {{- else }}
+        runAsUser: 1000
+        {{- end }}
+        {{- if $securityContext.runAsGroup }}
+        runAsGroup: {{ $securityContext.runAsGroup }}
+        {{- else }}
+        runAsGroup: 1000
+        {{- end }}
+        {{- if $securityContext.fsGroup }}
+        fsGroup: {{ $securityContext.fsGroup }}
+        {{- else }}
+        fsGroup: 1000
+        {{- end }}
+      containers:
+      - name: {{ template "f5-bigip-ctlr.name" . }}
+        image: "{{ .Values.image.user }}/{{ .Values.image.repo }}:{{ .Values.version }}"
+        {{- if .Values.podSecurityContext }}
+        securityContext:
+{{ toYaml .Values.podSecurityContext | indent 12 }}
+        {{- end }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 15
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 15
+        volumeMounts:
+        - name: cm-creds
+          mountPath: "/tmp/creds"
+          readOnly: true
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - /app/bin/k8s-bigip-ctlr
+        args:
+        - --credentials-directory
+        - /tmp/creds
+        - --deploy-config-cr={{ template "f5-bigip-ctlr.namespace" . }}/{{ template "f5-bigip-ctlr.fullname" . }}
+        - --manage-custom-resources=true
+        {{- range $key, $value := .Values.args }}
+        - --{{ $key | replace "_" "-"}}={{ $value }}
+        {{- end }}
+        resources:
+          limits:
+            cpu: {{ .Values.limits_cpu | default "100m" }}
+            memory: {{ .Values.limits_memory | default "512Mi" }}
+          requests:
+            cpu: {{ .Values.requests_cpu | default "100m" }}
+            memory: {{ .Values.requests_memory | default "512Mi" }}
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 6}}
+{{- end }}
+      volumes:
+      - name: cm-creds
+        secret:
+      {{- if .Values.cm_secret.create }}
+          secretName: f5-bigip-ctlr-login
+      {{- else }}
+          secretName: {{ .Values.cm_login_secret }}
+      {{- end }}
+{{- end }}

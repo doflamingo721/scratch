@@ -1,0 +1,69 @@
+# Custom values.yaml for F5 BIG-IP Controller
+
+image:
+  repository: registry.connect.redhat.com/f5networks/cntr-ingress-svcs
+  tag: latest
+  pullPolicy: IfNotPresent
+
+namespace: kube-system
+
+# RBAC configuration
+rbac:
+  create: true
+  serviceAccount:
+    create: true
+    name: bigip-ctlr
+
+serviceAccount:
+  create: true
+  name: bigip-ctlr
+
+# Secret configuration
+cm_secret:
+  create: false
+  name: bigip-login
+  username: ""
+  password: ""
+
+# Disable Central Manager since it's not in original deployment
+cm:
+  enabled: false
+  url: ""
+
+# Controller settings
+controller:
+  name: k8s-bigip-ctlr-deployment
+  image:
+    repo: registry.connect.redhat.com/f5networks/cntr-ingress-svcs
+    tag: latest
+  bigip_url: 192.168.110.167
+  bigip_partition: p2
+  insecure: true
+  namespace: default
+  create: true
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 3000
+  fsGroup: 2000
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+args:
+  as3_validation: true
+  disable_teems: true
+  log_as3_response: true
+  static_routing_mode: true
+  orchestration_cni: ovn-k8s
+  custom_resource_mode: true
+  pool_member_type: cluster
+  log_level: debug
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress
+  namespace: nginx-ingress
+  labels:
+    app: nginx-ingress
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  selector:
+    app: nginx-ingress
+---
+# ingresslink.yaml
+apiVersion: "cis.f5.com/v1"
+kind: IngressLink
+metadata:
+  name: nginx-ingress-ingresslink
+  namespace: nginx-ingress
+spec:
+  virtualServerAddress: "10.10.0.1"  #Route domain 1 Replace with your virtual server IP
+  iRules: []
+  selector:
+    matchLabels:
+      app: nginx-ingress
