@@ -15,12 +15,18 @@ rules:
   - apiGroups:
       - ''
       - extensions
+      - networking.k8s.io
+      - route.openshift.io
     resources:
       - nodes
       - services
       - endpoints
       - namespaces
+      - ingresses
       - pods
+      - ingressclasses
+      - policies
+      - routes
     verbs:
       - get
       - list
@@ -28,9 +34,14 @@ rules:
   - apiGroups:
       - ''
       - extensions
+      - networking.k8s.io
+      - route.openshift.io
     resources:
+      - configmaps
       - events
+      - ingresses/status
       - services/status
+      - routes/status
     verbs:
       - get
       - list
@@ -41,13 +52,15 @@ rules:
   - apiGroups:
       - cis.f5.com
     resources:
+      - virtualservers
+      - virtualservers/status
+      - tlsprofiles
       - transportservers
       - transportservers/status
-      - deployconfigs
-      - deployconfigs/status
-      - policies
       - ingresslinks
       - ingresslinks/status
+      - externaldnses
+      - policies
     verbs:
       - get
       - list
@@ -63,6 +76,20 @@ rules:
       - get
       - list
       - watch
+  - apiGroups:
+      - config.openshift.io/v1
+    resources:
+      - network
+    verbs:
+      - list
+  - apiGroups:
+      - crd.projectcalico.org
+    resources:
+      - blockaffinities
+    verbs:
+      - get
+      - watch
+      - list
 {{- if .Values.args.ipam }} 
   - apiGroups:
       - fic.f5.com

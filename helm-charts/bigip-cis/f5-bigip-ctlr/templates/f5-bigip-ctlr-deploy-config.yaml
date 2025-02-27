@@ -1,0 +1,35 @@
+---
+# Source: f5-bigip-ctlr/templates/f5-bigip-ctlr-deploy-config.yaml
+# templates/deployconfig.yaml
+apiVersion: "cis.f5.com/v1"
+kind: DeployConfig
+metadata:
+  name: bigip-cis-f5-bigip-ctlr
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: bigip-cis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: f5-bigip-ctlr
+    app: f5-bigip-ctlr
+    chart: f5-bigip-ctlr-20.3.0
+    release: bigip-cis
+    heritage: Helm
+    f5cr: "true"
+spec:
+  baseConfig:
+    controllerIdentifier: cluster-1
+    namespaceLabel: 
+    nodeLabel: 
+  networkConfig:
+    orchestrationCNI: ovn-k8s
+    metaData:
+      poolMemberType: cluster
+      networkCIDR: 
+      staticRoutingMode: true
+  as3Config:
+    debugAS3: true
+    postDelayAS3: 0
+  bigIpConfig:
+    - bigIpAddress: 10.145.71.46
+      bigIpLabel: Hyderabad
+      defaultPartition: test

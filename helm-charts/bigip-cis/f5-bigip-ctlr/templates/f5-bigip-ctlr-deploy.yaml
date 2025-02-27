@@ -1,0 +1,91 @@
+---
+# Source: f5-bigip-ctlr/templates/f5-bigip-ctlr-deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bigip-cis-f5-bigip-ctlr
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: bigip-cis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: f5-bigip-ctlr
+    app: f5-bigip-ctlr
+    chart: f5-bigip-ctlr-20.3.0
+    release: bigip-cis
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: f5-bigip-ctlr
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: bigip-cis
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: f5-bigip-ctlr
+        app: f5-bigip-ctlr
+        release: bigip-cis
+    spec:
+      serviceAccountName: bigip-ctlr
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
+      containers:
+      - name: f5-bigip-ctlr
+        image: "registry.connect.redhat.com/f5networks/cntr-ingress-svcs:latest"
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 15
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 15
+        volumeMounts:
+        - name: cm-creds
+          mountPath: "/tmp/creds"
+          readOnly: true
+        imagePullPolicy: IfNotPresent
+        command:
+        - /app/bin/k8s-bigip-ctlr
+        args:
+        - --credentials-directory
+        - /tmp/creds
+        - --deploy-config-cr=default/bigip-cis-f5-bigip-ctlr
+        - --manage-custom-resources=true
+        - --as3-validation=true
+        - --bigip-partition=p2
+        - --cm-url=192.168.110.167
+        - --custom-resource-mode=true
+        - --disable-teems=true
+        - --insecure=true
+        - --log-as3-response=true
+        - --log-level=debug
+        - --orchestration-cni=ovn-k8s
+        - --pool-member-type=cluster
+        - --static-routing-mode=true
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1024Mi
+          requests:
+            cpu: 200m
+            memory: 256Mi
+      volumes:
+      - name: cm-creds
+        secret:
+          secretName: bigip-login

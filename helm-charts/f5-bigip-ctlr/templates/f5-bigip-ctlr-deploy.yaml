@@ -1,8 +1,9 @@
-{{- if not .Values.args.cm_url }}
+{{- if or (not .Values.args.bigip_url) (not .Values.args.bigip_partition) }}
 {{/*
 Generate errors for missing required values.
 */}}
-# {{required "Central Manager url not specified - add to Values or pass with `--set` " .Values.args.cm_url }}
+# {{required "BIG-IP url not specified - add to Values or pass with `--set` " .Values.args.bigip_url }}
+# {{required "BIG-IP partition not specified - add to Values or pass with `--set` " .Values.args.bigip_partition }}
 {{- else -}}
 apiVersion: {{ template "deployment.apiVersion" . }}
 kind: Deployment
@@ -44,19 +45,22 @@ spec:
 {{- end }}
       securityContext:
         {{- $securityContext := .Values.securityContext | default dict }}
+        {{- $oscpOperator := .Files.Glob "oscp-operator.txt"  }}
         {{- if $securityContext.runAsUser }}
         runAsUser: {{ $securityContext.runAsUser }}
-        {{- else }}
+        {{- else if (not $oscpOperator) }}
         runAsUser: 1000
         {{- end }}
+        {{- $securityContext := .Values.securityContext | default dict }}
         {{- if $securityContext.runAsGroup }}
         runAsGroup: {{ $securityContext.runAsGroup }}
-        {{- else }}
+        {{- else if (not $oscpOperator) }}
         runAsGroup: 1000
         {{- end }}
+        {{- $securityContext := .Values.securityContext | default dict }}
         {{- if $securityContext.fsGroup }}
         fsGroup: {{ $securityContext.fsGroup }}
-        {{- else }}
+        {{- else if (not $oscpOperator) }}
         fsGroup: 1000
         {{- end }}
       containers:
@@ -87,19 +91,27 @@ spec:
           successThreshold: 1
           timeoutSeconds: 15
         volumeMounts:
-        - name: cm-creds
+        - name: bigip-creds
           mountPath: "/tmp/creds"
           readOnly: true
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
         - /app/bin/k8s-bigip-ctlr
         args:
+{{- if .Values.ingressClass.ingressClassName }}
+        - --ingress-class={{ .Values.ingressClass.ingressClassName | default "f5" }}
+{{- end }}
         - --credentials-directory
         - /tmp/creds
-        - --deploy-config-cr={{ template "f5-bigip-ctlr.namespace" . }}/{{ template "f5-bigip-ctlr.fullname" . }}
-        - --manage-custom-resources=true
+        {{- $ns := .Values.args.namespaces }}
         {{- range $key, $value := .Values.args }}
+        {{- if eq $key "namespaces" }}
+        {{- range $ns}}
+        - --namespace={{ . }}
+        {{- end }}
+        {{- else }}
         - --{{ $key | replace "_" "-"}}={{ $value }}
+        {{- end }}
         {{- end }}
         resources:
           limits:
@@ -117,11 +129,11 @@ spec:
 {{ toYaml .Values.tolerations | indent 6}}
 {{- end }}
       volumes:
-      - name: cm-creds
+      - name: bigip-creds
         secret:
-      {{- if .Values.cm_secret.create }}
+      {{- if .Values.bigip_secret.create }}
           secretName: f5-bigip-ctlr-login
       {{- else }}
-          secretName: {{ .Values.cm_login_secret }}
+          secretName: {{ .Values.bigip_login_secret }}
       {{- end }}
 {{- end }}
