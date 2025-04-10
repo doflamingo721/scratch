@@ -392,13 +392,27 @@ controller:
     ## Add IPv4 IP/CIDR blocks to the allow list for NGINX stub_status or the NGINX Plus API. Separate multiple IP/CIDR by commas.
     allowCidrs: "127.0.0.1"
 
+  service2:
+    annotations:
+      cis.f5.com/ip: ""
+      loadBalancerClass: ""
+      cis.f5.com/health: |
+        [
+          {
+            "type": "tcp",
+            "interval": 5,
+            "timeout": 10
+          }
+        ]
+
   service:
     ## Creates a service to expose the Ingress Controller pods.
     create: true
 
     ## The type of service to create for the Ingress Controller.
     type: LoadBalancer
-
+    ## Loadbalancer Class
+    loadBalancerClass: ""
     ## The externalTrafficPolicy of the service. The value Local preserves the client source IP.
     externalTrafficPolicy: Local
 

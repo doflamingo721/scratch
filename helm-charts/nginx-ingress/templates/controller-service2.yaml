@@ -9,16 +9,16 @@ metadata:
 {{- if .Values.controller.service.extraLabels }}
 {{ toYaml .Values.controller.service.extraLabels | indent 4 }}
 {{- end }}
-{{- if .Values.controller.service.annotations }}
+{{- if .Values.controller.service2.annotations }}
   annotations:
-{{ toYaml .Values.controller.service.annotations | indent 4 }}
+{{ toYaml .Values.controller.service2.annotations | indent 4 }}
 {{- end }}
 spec:
 {{- if .Values.controller.service.clusterIP }}
   clusterIP: {{ .Values.controller.service.clusterIP }}
 {{- end }}
-{{- if .Values.controller.service.loadBalancerClass }}
-  loadBalancerClass: {{ .Values.controller.service.loadBalancerClass }}
+{{- if .Values.controller.service2.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.controller.service2.loadBalancerClass }}
 {{- end }}
 {{- if or (eq .Values.controller.service.type "LoadBalancer") (eq .Values.controller.service.type "NodePort") }}
   {{- if .Values.controller.service.externalTrafficPolicy }}

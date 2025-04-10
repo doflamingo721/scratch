@@ -37,7 +37,7 @@ args:
   # OPTIONAL PARAMS -- uncomment and provide values for those you wish to use.
   # verify_interval:
   # node-poll_interval:
-  log_level: debug
+  log_level: DEBUG
   # python_basedir: ~
   # VXLAN
   # openshift_sdn_name:
@@ -53,6 +53,7 @@ args:
   # running_in_cluster:
   # use_node_internal:
   # use_secrets:
+  static-route-node-cidr: 10.200.138.0/24
   static-routing-mode: true
   disable-teems: true
   insecure: true
@@ -67,10 +68,14 @@ args:
 
 image:
   # Use the tag to target a specific version of the Controller
-  user: f5networks
+  user: nexus-dev.saibnet2.saib.com:443/f5networks
   repo: k8s-bigip-ctlr
-  pullPolicy: Always
-version: latest
+  pullPolicy: IfNotPresent
+version: 2.19.1
+#  user: f5networks
+#  repo: k8s-bigip-ctlr
+#  pullPolicy: Always
+#version: latest
 # affinity:
 #   nodeAffinity:
 #     requiredDuringSchedulingIgnoredDuringExecution:

@@ -1,0 +1,11 @@
+apiVersion: k8s.ovn.org/v1
+kind: EgressIP
+metadata:
+  name: bigip-controller-egressip
+spec:
+  egressIPs:
+  - 10.200.138.251
+  podSelector:
+    matchLabels:
+      app: f5-bigip-ctlr 
+  namespaceSelector: kube-system
